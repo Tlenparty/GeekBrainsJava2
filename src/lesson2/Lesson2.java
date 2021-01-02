@@ -10,15 +10,20 @@ public class Lesson2 {
     public static void main(String[] args) throws MyArraySizeException, MyArrayDataException {
         // Задаем массив из рандомных строк.
         System.out.println("Начальный массив из строк");
-        String[][] array = { { "3", "3", "3", "3"}, {}, {}, {}};
+        String[][] array = {
+                { "3", "3", "3", "3"},
+                {},
+                {},
+                {}
+        };
                 //new String[SIZE_ARRAY][SIZE_ARRAY];
-        for (int i = 0; i < array.length; i++) {
+/*        for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length; j++) {
               // array[i][j] = Integer.toString(random.nextInt(10));
                 System.out.print(array[i][j] + " ");
             }
             System.out.println();
-        }
+        }*/
 
        // array [0][0] = "1"; // записываем строку, вместо цифры
 
@@ -36,11 +41,14 @@ public class Lesson2 {
         int sum = 0;
         System.out.println();
         System.out.println("Массив числовой");
-        if (array.length != 4 && array[4].length != 4) {
+        if (array.length != 4 ) {
             throw new MyArraySizeException();  // ловим исключение MyArraySizeException
         }
         for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array.length; j++) {
+            if( 4 != array[i].length){
+                throw new MyArraySizeException();
+            }
+             for (int j = 0; j < array.length; j++) {
                 try {
                     sum += Integer.parseInt(array[i][j]); // Переводим массив в числа
                     System.out.print(sum + " ");
