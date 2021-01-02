@@ -10,16 +10,17 @@ public class Lesson2 {
     public static void main(String[] args) throws MyArraySizeException, MyArrayDataException {
         // Задаем массив из рандомных строк.
         System.out.println("Начальный массив из строк");
-        String[][] array = new String[SIZE_ARRAY][SIZE_ARRAY];
+        String[][] array = { { "3", "3", "3", "3"}, {}, {}, {}};
+                //new String[SIZE_ARRAY][SIZE_ARRAY];
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array.length; j++) {
-                array[i][j] = Integer.toString(random.nextInt(10));
+              // array[i][j] = Integer.toString(random.nextInt(10));
                 System.out.print(array[i][j] + " ");
             }
             System.out.println();
         }
 
-        array [0][0] = "1"; // записываем строку, вместо цифры
+       // array [0][0] = "1"; // записываем строку, вместо цифры
 
         // Вызываем метод с созданным массивом array
         try {
@@ -35,7 +36,7 @@ public class Lesson2 {
         int sum = 0;
         System.out.println();
         System.out.println("Массив числовой");
-        if (array.length != 4) {
+        if (array.length != 4 && array[4].length != 4) {
             throw new MyArraySizeException();  // ловим исключение MyArraySizeException
         }
         for (int i = 0; i < array.length; i++) {
@@ -44,7 +45,7 @@ public class Lesson2 {
                     sum += Integer.parseInt(array[i][j]); // Переводим массив в числа
                     System.out.print(sum + " ");
 
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                     e.printStackTrace();
                     throw new MyArrayDataException();  // ловим MyArrayDataException
                 }
