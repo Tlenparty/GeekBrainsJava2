@@ -21,6 +21,7 @@ public class Lesson1 {
                         System.out.println();
                         break;
                     }
+
                 } else {
                     if (!skills.run(value)) {
                         System.out.println();
