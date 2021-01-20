@@ -45,7 +45,6 @@ public class lesson5 {
      * Для второго метода замеряете время разбивки массива на 2, просчета каждого из двух массивов и склейки.
      */
 
-
     //1)
     static final int SIZE = 10000000;
     static final int H = SIZE / 2;
@@ -126,9 +125,7 @@ public class lesson5 {
         System.out.println("\n++++++++++++++++++++++++++++++++++++++++++++");
         System.out.println("Время выполнения = " + TIME_ACTION);
 
-
     }
-
 
     public static void main(String[] args) {
         firstMethod();
