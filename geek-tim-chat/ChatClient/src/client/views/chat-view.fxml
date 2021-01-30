@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controllers.ChatController">
+   <children>
+      <SplitPane layoutX="164.0" prefHeight="400.0" prefWidth="434.0">
+         <items>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <TextArea fx:id="chatHistory" layoutX="15.0" layoutY="63.0" prefHeight="225.0" prefWidth="414.0">
+                     <effect>
+                        <Blend />
+                     </effect>
+                  </TextArea>
+                  <AnchorPane layoutX="13.0" layoutY="290.0" prefHeight="109.0" prefWidth="414.0">
+                     <children>
+                        <TextField fx:id="textField" layoutX="14.0" layoutY="28.0" prefHeight="109.0" prefWidth="332.0" promptText="Введите сообщение" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="82.0" AnchorPane.topAnchor="0.0" />
+                        <Button fx:id="sendButton" layoutX="331.0" layoutY="42.0" mnemonicParsing="false" prefHeight="109.0" prefWidth="83.0" text="Отправить" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="331.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+                  <Label fx:id="usernameTitle" layoutX="363.0" layoutY="20.0" prefHeight="17.0" prefWidth="49.0" />
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+      <AnchorPane layoutX="-2.0" layoutY="-2.0" prefHeight="400.0" prefWidth="165.0">
+         <children>
+            <ListView fx:id="userList" layoutY="29.0" prefHeight="374.0" prefWidth="167.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
