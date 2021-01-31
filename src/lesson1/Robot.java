@@ -1,6 +1,7 @@
 package lesson1;
 
 public class Robot implements Skills {
+
     private String name;
     private int maxRun;
     private int maxJump;
@@ -35,7 +36,6 @@ public class Robot implements Skills {
             return false;
         }
     }
-
 }
 
 
