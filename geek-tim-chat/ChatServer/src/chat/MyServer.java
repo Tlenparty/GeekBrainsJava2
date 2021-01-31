@@ -3,6 +3,7 @@ package chat;
 import chat.auth.AuthService;
 import chat.auth.BaseAuthService;
 import chat.handler.ClientHandler;
+import clientserver.Command;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,6 +18,10 @@ public class MyServer {
     private final AuthService authService;
     private final List<ClientHandler> clients = new ArrayList<>();
 
+    public List<ClientHandler> getClients() {
+        return clients;
+    }
+
 
     public MyServer(int port) throws IOException {
         // 3. Запускаем сервер и сервис аунтификации
@@ -24,6 +29,7 @@ public class MyServer {
         this.authService = new BaseAuthService();
 
     }
+
 
     public void start() throws IOException {
         // 4 Создание пользователей. Хэндлеровы
@@ -93,4 +99,22 @@ public class MyServer {
             client.sendMessage(isServerInfoMsg ? null : sender.getUsername(), message);
         }
     }
+
+    public void PrivateMessage(String message, ClientHandler sender, String recipient, boolean isServerInfoMsg) throws IOException {
+
+        for (ClientHandler client : clients) {
+            if(recipient.equals(client.getUsername())) {
+                client.sendMessage(isServerInfoMsg ? null : sender.getUsername(), recipient, message);
+            }
+
+        }
+    }
+
+
+    public void broadcastUserList(String userList, boolean isServerInfoMsg) throws IOException {
+        for (ClientHandler client : clients) {
+            client.sendUserList(isServerInfoMsg ? null : userList);
+        }
+    }
+
 }

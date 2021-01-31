@@ -11,7 +11,7 @@ public class BaseAuthService implements AuthService{
     public static final List<User> clients =List.of(
             new User("user1","1111","Морти_Смит"),
             new User("user2","2222","Isaac_Duran"),
-            new User("user3","3333", "Пелла_Дочевна")
+            new User("user3","3333", "Вероника_Клубника")
     );
 
 
@@ -34,6 +34,5 @@ public class BaseAuthService implements AuthService{
     @Override
     public void close() {
         System.out.println("Сервер аунтификации завершен");
-
     }
 }

@@ -3,9 +3,9 @@ package client.controllers;
 import client.NetworkClient;
 import client.models.Network;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-
 import java.io.IOException;
 
 public class AuthController {
@@ -48,6 +48,4 @@ public class AuthController {
     public void setNetworkClient(NetworkClient networkClient) {
         this.networkClient = networkClient;
     }
-
-
 }

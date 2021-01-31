@@ -4,20 +4,22 @@ package client.controllers;
 import client.NetworkClient;
 import client.models.Network;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class ChatController {
-
     @FXML
     private TextArea chatHistory;
 
     @FXML
-    public ListView<String> userList;
+    public ListView<String> usersList;
 
     @FXML
     private Label usernameTitle;
@@ -28,9 +30,13 @@ public class ChatController {
     @FXML
     private Button sendButton;
 
-   // private final ObservableList<String> wordList = FXCollections.observableArrayList("Hi","how are you");
+    @FXML
+    private ChoiceBox<String> userSend;
+
 
     private Network network;
+
+    private List <String> user = new ArrayList<>();
 
     // Нетворкчат (эко клиент) знает нетворк.
 
@@ -44,13 +50,35 @@ public class ChatController {
 
     @FXML
     public void initialize(){
-        userList.setItems(FXCollections.observableArrayList(NetworkClient.USERS_TEST_DATA));
-        sendButton.setOnAction(event -> ChatController.this.sendMessage());
+        //userList.setItems(FXCollections.observableArrayList(NetworkClient.USERS_TEST_DATA));
+        user.add(0,"Всем");
+        user.addAll(Network.userList);
+        user.remove(usernameTitle.getText());
+        userSend.setItems(FXCollections.observableArrayList(user));
+        userSend.setValue(user.get(0));
+        usersList.setItems(FXCollections.observableArrayList(Network.userList));
         textField.setOnAction(event -> ChatController.this.sendMessage());
+        sendButton.setOnAction(event -> ChatController.this.sendMessage());
+
+
+    }
+
+    public void newUserList(){
+        user.clear();
+        user.add(0,"Всем");
+        user.addAll(Network.userList);
+        user.remove(usernameTitle.getText());
+        userSend.setItems(FXCollections.observableArrayList(user));
+        userSend.setValue(user.get(0));
+        usersList.setItems(FXCollections.observableArrayList(Network.userList));
     }
 
 
+
+
+
     // Отвечает за отправку на экран. Принмиет текст из поля
+
     private void sendMessage(){  // Отправка сообщения на нетворк + вывод на экран
         String message = textField.getText();
         appendMessage("Я: " + message); // добавляет текст.
@@ -59,7 +87,13 @@ public class ChatController {
         // Получим класс Network
         try {
             // Отправляем сообщение на сервер
-            network.sendMessage(message); // get.Out().writeUTF(message);
+           // network.sendMessage(message); // get.Out().writeUTF(message);
+            if (userSend.getValue().equals("Всем")) {
+                network.sendMessage(message);
+            } else {
+                network.sendPrivateMessage(message, userSend.getValue());
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
             NetworkClient.showErrorMessage("Ошибка подключения","Ошибка при отправке сообщения",e.getMessage());
@@ -70,10 +104,15 @@ public class ChatController {
 
     public void appendMessage(String message) { // вывод на экран
 
+        String timestamp = DateFormat.getInstance().format(new Date());
+        chatHistory.appendText(timestamp);
+        chatHistory.appendText(System.lineSeparator());
         chatHistory.appendText(message);
+        chatHistory.appendText(System.lineSeparator());
         chatHistory.appendText(System.lineSeparator());
 
     }
+
 
 
     public void setUsernameTitle(String username) {

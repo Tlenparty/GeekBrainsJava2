@@ -1,6 +1,6 @@
 package chat;
+
 import java.util.Objects;
-import java.nio.file.attribute.UserPrincipal;
 
 public class User {
 

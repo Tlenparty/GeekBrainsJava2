@@ -10,12 +10,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+import java.util.Timer;
+import java.util.TimerTask;
 import java.io.IOException;
 import java.util.List;
 
 public class NetworkClient extends Application {
-    public static final List<String> USERS_TEST_DATA = List.of("Морти_Смит", "Isaac_Duran", "Пелла_Дочевна");
+
+   // public static final List<String> USERS_TEST_DATA = List.of("Морти_Смит", "Isaac_Duran", "Пелла_Дочевна");
     private Stage primaryStage;
     private Stage authStage;
     private Network network;
@@ -30,11 +32,13 @@ public class NetworkClient extends Application {
         // Создадим network. Пустой констурктор будет подключаться
         network = new Network();
 
-        if (!network.connect()) {
+           if (!network.connect()) {
             System.out.println("Ошибка подключения");
             showErrorMessage("Проблемы с соединением", "", "Ошибка подключения к серверу");
             return;
         }
+
+
         // 1 Открываем окно с авторизацией
         openAuthWindow();
         // 2 Создаем окно
@@ -80,7 +84,12 @@ public class NetworkClient extends Application {
         chatController.setNetwork(network); // для того чтобы передать network контроллеру
         // network.waitMessage(chatController);
         // Обратимся к сцене
-        primaryStage.setOnCloseRequest(windowEvent -> network.close());
+       // primaryStage.setOnCloseRequest(windowEvent -> network.close());
+        primaryStage.setOnCloseRequest(windowEvent -> {
+            network.sendExitMessage();
+            network.close();
+        });
+
     }
 
     // пропишем Alert
@@ -107,5 +116,4 @@ public class NetworkClient extends Application {
         chatController.setLabel(network.getUsername());
         network.waitMessage(chatController);
     }
-
 }

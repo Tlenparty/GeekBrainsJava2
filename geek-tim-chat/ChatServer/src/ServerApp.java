@@ -12,7 +12,7 @@ public class ServerApp {
             port = Integer.parseInt(args[0]);
         }
 
-        // 1. Запуск сервера. С портом
+        // 1. Запуск сервера. Принимаем порт и прокидываем на майсервер
         try {
             new MyServer(port).start();
         } catch (IOException e) {

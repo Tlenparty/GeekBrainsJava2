@@ -3,11 +3,22 @@ package client.models;
 import client.NetworkClient;
 import client.controllers.ChatController;
 import javafx.application.Platform;
+import client.NetworkClient;
+import client.controllers.ChatController;
+import clientserver.Command;
+import clientserver.commands.*;
+import javafx.application.Platform;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import java.io.*;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Network {
     private static final String AUTH_CMD_PREFIX = "/auth";
@@ -17,6 +28,8 @@ public class Network {
     private static final String CLIENT_MSG_PREFIX = "/clientMsg"; // сигнал о завершении
     private static final String SERVER_MSG_PREFIX = "/serverMsg"; // сигнал о завершении
     private static final String END_CMD = "/end"; // сигнал о завершении
+    private static final String USER_LIST = "/userList";
+    public static List<String> userList = new ArrayList<>();
 
     private static final int SERVER_PORT = 8189;
     private static final String SERVER_HOST = "localhost";
@@ -28,6 +41,8 @@ public class Network {
     private Socket socket;
 
     private String username;
+
+
 
     // Создадим конструкторы
 
@@ -85,25 +100,39 @@ public class Network {
                     // Будем ждать из потока
                     String message = in.readUTF();
 
-                    if (message.startsWith(CLIENT_MSG_PREFIX)) {
-                        String[] parts = message.split("\\s+", 3);
-                        String sender = parts[1];
-                        String msgBody = parts[2];
-                        // Вывод на экран ч/з runLater. Чтоби изменять поток UI не сразу,а указать очередь
-                        // Как только UI будет свободен и сможет вывести сообщение то мы сможем это сделать
-                        Platform.runLater(() -> chatController.appendMessage(String.format
-                                ("%s: %s", sender, msgBody)));
-                    } else if (message.startsWith(SERVER_MSG_PREFIX)) {
-                        String[] parts = message.split("\\s+", 2);
-                        Platform.runLater(() -> chatController.appendMessage(parts[1]));
-                    } else {
-                        // Если будет ошибка сформируем модельное окно
-                        Platform.runLater(() -> NetworkClient.showErrorMessage
-                                ("Неизвестная комада", message, ""));
-                    }
-                }
 
-            } catch (IOException e) {
+                        if (message.startsWith(USER_LIST)) {
+                         String[] parts = message.split("\\s+");
+                            userList.clear();
+                            userList.addAll(Arrays.asList(parts).subList(1, parts.length));
+                            Platform.runLater(chatController::newUserList);
+                            // Вывод на экран ч/з runLater. Чтоби изменять поток UI не сразу,а указать очередь
+                            // Как только UI будет свободен и сможет вывести сообщение то мы сможем это сделать
+
+                        } else if(message.startsWith(CLIENT_MSG_PREFIX)) {
+                            String[] parts = message.split("\\s+", 3);
+                            String sender = parts[1];
+                            String msgBody = parts[2];
+
+                            Platform.runLater(() -> chatController.appendMessage(String.format("%s: %s", sender, msgBody)));
+
+                        } else if (message.startsWith(PRIVATE_MSG_PREFIX)) {
+                            String[] parts = message.split("\\s+", 4);
+                            String sender = parts[1];
+                            String msgBody = parts[3];
+
+                            Platform.runLater(() -> chatController.appendMessage(String.format("%s: %s", sender, msgBody)));
+
+                        } else if (message.startsWith(SERVER_MSG_PREFIX)) {
+                            String[] parts = message.split("\\s+", 2);
+                            Platform.runLater(() -> chatController.appendMessage(parts[1]));
+
+                        } else {
+                            Platform.runLater(() -> NetworkClient.showErrorMessage("Неизвестная команда", message, ""));
+                        }
+                    }
+
+        } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Соединение потеряно");
                 NetworkClient.showErrorMessage("Ошибка подключения", "", e.getMessage());
@@ -143,4 +172,18 @@ public class Network {
     public void sendMessage(String message) throws IOException {
         out.writeUTF(message);
     }
+
+
+    public void sendPrivateMessage(String message, String recipient) throws IOException {
+        message = PRIVATE_MSG_PREFIX + " " + recipient + " " + message;
+        out.writeUTF(message);
+    }
+    public void sendExitMessage(){
+        try {
+            out.writeUTF("/end");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

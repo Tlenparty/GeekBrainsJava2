@@ -2,22 +2,26 @@ package chat.handler;
 
 import chat.MyServer;
 import chat.auth.AuthService;
+import clientserver.Command;
+import clientserver.CommandType;
+import clientserver.commands.AuthCommandData;
+import clientserver.commands.PrivateMessageCommandData;
+import clientserver.commands.PublicMessageCommandData;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.util.Timer;
 
 public class ClientHandler {
 
-    private static final String  AUTH_CMD_PREFIX = "/auth";
-    private static final String  AUTHOK_CMD_PREFIX = "/authok"; // Если аут окей
-    private static final String  AUTHERR_CMD_PREFIX = "/autherr"; // Если ошибка
-    private static final String  PRIVATE_MSG_PREFIX = "/w";  // для лс
-    private static final String  CLIENT_MSG_PREFIX = "/clientMsg"; // сигнал о завершении
-    private static final String  SERVER_MSG_PREFIX = "/serverMsg"; // сигнал о завершении
-    private static final String  END_CMD = "/end"; // сигнал о завершении
-
+    private static final String AUTH_CMD_PREFIX = "/auth";
+    private static final String AUTHOK_CMD_PREFIX = "/authok"; // Если аут окей
+    private static final String AUTHERR_CMD_PREFIX = "/autherr"; // Если ошибка
+    private static final String PRIVATE_MSG_PREFIX = "/w";  // для лс
+    private static final String CLIENT_MSG_PREFIX = "/clientMsg"; // сигнал о завершении
+    private static final String SERVER_MSG_PREFIX = "/serverMsg"; // сигнал о завершении
+    private static final String END_CMD = "/end"; // сигнал о завершении
+    private static final String USER_LIST = "/userList";
 
 
     private final MyServer myServer;
@@ -43,7 +47,7 @@ public class ClientHandler {
             try {
                 authentication();
                 readMessage(); // Сможет нам вернуть ощибку
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println(e.getMessage());
@@ -58,39 +62,87 @@ public class ClientHandler {
         String message = in.readUTF();// принимаем сообщение c консоли
         // Нужыне перфиксы для мессаджа . И для этого будем строку парсить
         // Чтобы по-разному наши сообщения делать. Отправка кому-то, логин пароль, всем
-        while (true){
-            if(message.startsWith(AUTH_CMD_PREFIX)){
+
+        while (true) {
+            if (message.startsWith(AUTH_CMD_PREFIX)) {
                 // если сообщение начинается на /auth то
-                String[] parts = message.split("\\s+",3); // регулярное выражение
+                String[] parts = message.split("\\s+", 3); // регулярное выражение
                 // ожидаем 1 пробел или несколько и будем делить на 3 части наше сообщение
                 // Получаем логин и пароль
                 String login = parts[1];
                 String password = parts[2];
                 // CH будет обращаться к серверу и забирать у него сервисаунтифик
                 AuthService authService = myServer.getAuthService();
-                username = authService.getUsernameByLoginAndPassword(login,password);
+                username = authService.getUsernameByLoginAndPassword(login, password);
                 // на выходе ждем имя пользователя
-                if (username != null){
+                if (username != null) {
                     // никнейм незанят
-                    if(myServer.isUsernameBusy(username)){
+                    if (myServer.isUsernameBusy(username)) {
                         // Если клиент занят, то оповестим с сервера, клинету об этом
-                        out.writeUTF(String.format("%s,%s",AUTHERR_CMD_PREFIX, "Логин уже используется"));
+                        out.writeUTF(String.format("%s %s", AUTHERR_CMD_PREFIX, "Логин уже используется"));
                     }
-                    out.writeUTF(String.format("%s,%s",AUTHOK_CMD_PREFIX, username));
+                    out.writeUTF(String.format("%s %s", AUTHOK_CMD_PREFIX, username));
                     // оповестим пользователей о подключении новичка
                     // Будет строка.Для продкаста передадим handle ч/з this. True - флаг серверное ли сообщение или нет
-                    myServer.broadcastMessage(String.format(">>>>> %s подключился к чату",username),this, true);
+                    myServer.broadcastMessage(String.format(">>>>> %s подключился к чату", username), this, true);
                     // зарегистрировать клиента
                     //должен быть список клиентов. уточнить не подключен ли уже пользлователь.
                     //myServer будет хранить все хэндлеры с пользователями (subscribe)
                     myServer.subscribe(this); // на вход будем  отдавать текущий хэндлер
+
+                    String userList = USER_LIST;
+
+                    for (ClientHandler client : myServer.getClients()) {
+                        userList = userList + " " + client.getUsername();
+                    }
+                    myServer.broadcastUserList(userList, false);
+
                     break;
-                }else{
+
+                } else {
                     // То не прошла авторизация
-                    out.writeUTF(String.format("%s,%s",AUTHERR_CMD_PREFIX, "Логин или пароль не соответсвтуют действительности"));
+                    out.writeUTF(String.format("%s %s", AUTHERR_CMD_PREFIX, "Логин или пароль не соответсвтуют" +
+                            " действительности"));
                 }
-            }else{
-                out.writeUTF(String.format("%s,%s",AUTHERR_CMD_PREFIX, "Ошибка авторизации"));
+            } else {
+                out.writeUTF(String.format("%s %s", AUTHERR_CMD_PREFIX, "Ошибка авторизации"));
+            }
+        }
+    }
+
+
+
+    public void sendUserList(String userLists) throws IOException {
+        out.writeUTF(String.format("%s", userLists));
+    }
+
+
+    private void readMessage() throws IOException {
+        while (true) {
+            String message = in.readUTF();
+            String[] parts;
+            String recipient;
+            System.out.println("message | " + username + ":" + message);
+
+            if (message.startsWith(END_CMD)) {
+                myServer.unSubscribe(this);
+                String userList = USER_LIST;
+
+                for (ClientHandler client : myServer.getClients()) {
+                    userList = userList + " " + client.getUsername();
+                }
+                    myServer.broadcastUserList(userList, false);  // Отправка сообщений пользавателям
+                    myServer.broadcastUserList(userList, false);
+                    return; // Выхожим. Завершаем действие хэндлера
+
+            } else if (message.startsWith(PRIVATE_MSG_PREFIX)) {
+                parts = message.split("\\s+", 3);
+                recipient = parts[1];
+                message = parts[2];
+                myServer.PrivateMessage(message, this, recipient,false);
+            } else {
+                // Мы будем просто выводить на экран всем. false значит не серверное сообщение
+                myServer.broadcastMessage(message, this, false);
             }
         }
     }
@@ -99,31 +151,23 @@ public class ClientHandler {
         return username;
     }
 
-    public void sendMessage(String sender, String message) throws IOException {
-        if (sender == null){
+
+    public void sendMessage(String sender,  String message) throws IOException {
+        if (sender == null) {
             out.writeUTF(String.format("%s %s", SERVER_MSG_PREFIX, message));
         }
-        else{
-            out.writeUTF(String.format("%s %s %s", CLIENT_MSG_PREFIX, sender, message));
+        else {
+            out.writeUTF(String.format("%s %s %s ", CLIENT_MSG_PREFIX, sender,  message));
         }
-
     }
 
-    private void readMessage() throws IOException {
-        while(true){
-            String message = in.readUTF();
-            System.out.println("message | " + username + ":" + message );
-            if (message.startsWith(END_CMD)){
-                return; // Выхожим. Завершаем действие хэндлера
-            }else if (message.startsWith(PRIVATE_MSG_PREFIX)){
-/**
- * Реализуем личное сообщение тут
- */
-
-            }else{
-                // Мы будем просто выводить на экран всем. false значит не серверное сообщение
-                myServer.broadcastMessage(message, this,false);
-            }
+    public void sendMessage(String sender, String recipient, String message) throws IOException {
+        if (sender == null) {
+            out.writeUTF(String.format("%s %s", SERVER_MSG_PREFIX, message));
+        }
+        else {
+            out.writeUTF(String.format("%s %s %s %s", PRIVATE_MSG_PREFIX, sender, recipient, message));
         }
     }
 }
+
