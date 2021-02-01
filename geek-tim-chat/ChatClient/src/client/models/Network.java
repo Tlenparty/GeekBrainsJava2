@@ -76,6 +76,7 @@ public class Network {
         try {
             socket.close();
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -180,7 +181,7 @@ public class Network {
     }
     public void sendExitMessage(){
         try {
-            out.writeUTF("/end");
+            out.writeUTF(END_CMD);
         } catch (IOException e) {
             e.printStackTrace();
         }

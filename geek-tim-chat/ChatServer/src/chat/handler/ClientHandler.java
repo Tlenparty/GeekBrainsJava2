@@ -2,15 +2,9 @@ package chat.handler;
 
 import chat.MyServer;
 import chat.auth.AuthService;
-import clientserver.Command;
-import clientserver.CommandType;
-import clientserver.commands.AuthCommandData;
-import clientserver.commands.PrivateMessageCommandData;
-import clientserver.commands.PublicMessageCommandData;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Timer;
 
 public class ClientHandler {
 
@@ -112,7 +106,7 @@ public class ClientHandler {
 
 
 
-    public void sendUserList(String userLists) throws IOException {
+    public synchronized void sendUserList(String userLists) throws IOException {
         out.writeUTF(String.format("%s", userLists));
     }
 
@@ -139,7 +133,7 @@ public class ClientHandler {
                 parts = message.split("\\s+", 3);
                 recipient = parts[1];
                 message = parts[2];
-                myServer.PrivateMessage(message, this, recipient,false);
+                myServer.privateMessage(message, this, recipient,false);
             } else {
                 // Мы будем просто выводить на экран всем. false значит не серверное сообщение
                 myServer.broadcastMessage(message, this, false);
@@ -152,7 +146,7 @@ public class ClientHandler {
     }
 
 
-    public void sendMessage(String sender,  String message) throws IOException {
+    public synchronized void sendMessage(String sender,  String message) throws IOException {
         if (sender == null) {
             out.writeUTF(String.format("%s %s", SERVER_MSG_PREFIX, message));
         }
@@ -161,7 +155,7 @@ public class ClientHandler {
         }
     }
 
-    public void sendMessage(String sender, String recipient, String message) throws IOException {
+    public synchronized void sendMessage(String sender, String recipient, String message) throws IOException {
         if (sender == null) {
             out.writeUTF(String.format("%s %s", SERVER_MSG_PREFIX, message));
         }

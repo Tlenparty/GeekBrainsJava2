@@ -17,7 +17,7 @@ import java.util.List;
 
 public class NetworkClient extends Application {
 
-   // public static final List<String> USERS_TEST_DATA = List.of("Морти_Смит", "Isaac_Duran", "Пелла_Дочевна");
+
     private Stage primaryStage;
     private Stage authStage;
     private Network network;
@@ -55,12 +55,23 @@ public class NetworkClient extends Application {
         // создаем сцену
         authStage = new Stage();
 
-        primaryStage.setTitle("Authorisation");
+        authStage.setTitle("Authorisation");
         authStage.initModality(Modality.WINDOW_MODAL); // задаем модальное окно
         authStage.initOwner(primaryStage);
         Scene scene = new Scene(root); // Сцена для нашего окна
         authStage.setScene(scene);
         authStage.show();
+
+        TimerTask timeout = new TimerTask() {
+            @Override
+            public void run() {
+                if (!primaryStage.isShowing()) {
+                    network.close();
+                    System.exit(1);
+                }
+            }
+        };
+        new Timer().schedule(timeout, 120*1000);
 
         AuthController authController = loader.getController();
         authController.setNetwork(network);

@@ -100,7 +100,7 @@ public class MyServer {
         }
     }
 
-    public void PrivateMessage(String message, ClientHandler sender, String recipient, boolean isServerInfoMsg) throws IOException {
+    public void privateMessage(String message, ClientHandler sender, String recipient, boolean isServerInfoMsg) throws IOException {
 
         for (ClientHandler client : clients) {
             if(recipient.equals(client.getUsername())) {
