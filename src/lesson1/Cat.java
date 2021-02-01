@@ -10,7 +10,6 @@ public class Cat implements Skills {
         this.name = name;
         this.maxJump = maxJump;
         this.maxRun = maxRun;
-
     }
 
     @Override
