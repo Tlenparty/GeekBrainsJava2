@@ -1,34 +1,34 @@
 # Java Core Exercises
 
-Набор небольших консольных программ на Java Core и сетевой чат клиент-сервер
-с GUI на JavaFX.
+A set of small console programs in Java Core and a client-server network chat
+with a JavaFX GUI.
 
-## Содержание
+## Contents
 
-| Каталог / пакет | Что делает |
-|-----------------|------------|
-| `src/obstacles` | ООП и интерфейсы: кот, человек и робот проходят полосу препятствий (стена, беговая дорожка) |
-| `src/exceptions` | Собственные исключения `MyArraySizeException` / `MyArrayDataException` при суммировании массива строк 4×4 |
-| `src/collections` | Коллекции: уникальные слова и частота их появления; телефонный справочник с несколькими номерами на фамилию |
-| `src/threads` | Сравнение обработки большого массива в одном потоке и в двух потоках с разбиением и склейкой |
-| `src/echo` | Консольный чат «один клиент — один сервер» на сокетах, двусторонняя переписка в отдельных потоках |
-| `chat/ChatServer` | Многопользовательский сервер чата: авторизация по логину/паролю, рассылка всем, личные сообщения (`/w`), список участников онлайн |
-| `chat/ChatClient` | JavaFX-клиент чата: окно входа, общий чат, выбор получателя для личного сообщения, отключение по таймауту, если вход не выполнен за 120 секунд |
-| `chat-ui-prototype` | Прототип окна чата на JavaFX (FXML) |
+| Directory / package | What it does |
+|---------------------|--------------|
+| `src/obstacles` | OOP and interfaces: a cat, a human and a robot run an obstacle course (wall, treadmill) |
+| `src/exceptions` | Custom exceptions `MyArraySizeException` / `MyArrayDataException` when summing a 4×4 array of strings |
+| `src/collections` | Collections: unique words and their frequencies; a phone book with several numbers per surname |
+| `src/threads` | Comparing processing of a large array in a single thread vs. two threads with splitting and merging |
+| `src/echo` | A one-client, one-server console chat over sockets, with two-way messaging in separate threads |
+| `chat/ChatServer` | Multi-user chat server: login/password authentication, broadcast to all, private messages (`/w`), list of online users |
+| `chat/ChatClient` | JavaFX chat client: login window, common chat, recipient selection for private messages, disconnect on timeout if login is not completed within 120 seconds |
+| `chat-ui-prototype` | JavaFX (FXML) chat window prototype |
 
-Тестовые пользователи сервера: `user1 / 1111`, `user2 / 2222`, `user3 / 3333`.
+Test users on the server: `user1 / 1111`, `user2 / 2222`, `user3 / 3333`.
 
-## Стек
+## Tech stack
 
-| Область | Технологии |
-|---------|------------|
-| Язык | Java 11+ |
-| Сеть | `java.net.Socket`, `DataInputStream` / `DataOutputStream` |
+| Area | Technologies |
+|------|--------------|
+| Language | Java 11+ |
+| Networking | `java.net.Socket`, `DataInputStream` / `DataOutputStream` |
 | UI | JavaFX (FXML) |
 
-## Сборка и запуск
+## Build and run
 
-Консольные программы и сервер собираются `javac` без зависимостей:
+The console programs and the server are built with `javac` and have no dependencies:
 
 ```bash
 javac -encoding UTF-8 -d out $(find src -name '*.java')
@@ -38,5 +38,5 @@ javac -encoding UTF-8 -d out-server $(find chat/ChatServer -name '*.java')
 java -cp out-server ServerApp 8189
 ```
 
-Клиент (`chat/ChatClient`) требует JavaFX SDK — удобнее всего открыть его в IntelliJ IDEA
-с подключённой библиотекой JavaFX и запустить `client.NetworkClient`.
+The client (`chat/ChatClient`) requires the JavaFX SDK. The easiest way is to open it in IntelliJ IDEA
+with the JavaFX library attached and run `client.NetworkClient`.
