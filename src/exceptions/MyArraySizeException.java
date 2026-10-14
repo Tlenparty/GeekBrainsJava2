@@ -1,4 +1,4 @@
-package lesson2;
+package exceptions;
 
 public class MyArraySizeException extends Exception{
     public MyArraySizeException(){

@@ -1,4 +1,4 @@
-package lesson2;
+package exceptions;
 
 public class MyArrayDataException extends Exception {
     public MyArrayDataException(){

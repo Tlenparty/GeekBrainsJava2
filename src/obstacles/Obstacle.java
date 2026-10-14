@@ -1,5 +1,5 @@
 
-package lesson1;
+package obstacles;
 
 public class Obstacle {
 

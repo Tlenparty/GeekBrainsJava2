@@ -1,49 +1,59 @@
-package lesson6;
+package echo;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Server {
+public class Client {
+
     public static final int SERVER_PORT = 8189;
+    public static final String SERVER_HOST = "localhost";
 
     public static void main(String[] args) {
-        Socket socket;
         Scanner scanner = new Scanner(System.in);
+        Socket socket;
+
         try {
-            ServerSocket serverSocket = new ServerSocket(SERVER_PORT);
-            System.out.println("Сервер запущен, ожидаем подключения..");
-            socket = serverSocket.accept();
-            System.out.println("Клиент подключился");
+            socket = new Socket(SERVER_HOST, SERVER_PORT);
+            System.out.println("Вы подключились");
             DataInputStream in = new DataInputStream(socket.getInputStream());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             Thread thread1 = new Thread(() -> {
                 try {
                     while (true) {
-                        String messageFromClient = in.readUTF();
-                        System.out.println(messageFromClient);
+                        String messageFromServer = in.readUTF();
+                        System.out.println(messageFromServer);
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
+                    System.out.println("Сервер отключился.");
                 }
             });
             thread1.start();
             Thread thread2 = new Thread(() -> {
                 try {
                     while (true) {
-                        String message = scanner.nextLine();
-                            out.writeUTF("Сервер: " + message);
+                        String messageFromClient = scanner.nextLine();
+                            out.writeUTF("Клиент: " + messageFromClient);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
             thread2.start();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }
+
+
+
+
+
+
+

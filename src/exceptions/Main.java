@@ -1,8 +1,8 @@
-package lesson2;
+package exceptions;
 
 import java.util.Random;
 
-public class Lesson2 {
+public class Main {
 
     public static Random random = new Random();
     public static final int SIZE_ARRAY = 4;

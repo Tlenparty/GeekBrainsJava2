@@ -1,10 +1,10 @@
-package lesson5;
+package threads;
 
 import org.w3c.dom.ls.LSOutput;
 
 import java.util.Arrays;
 
-public class lesson5 {
+public class Main {
 
 
     /**

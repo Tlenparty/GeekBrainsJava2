@@ -1,4 +1,4 @@
-package lesson1;
+package obstacles;
 
 public class Human implements Skills {
 

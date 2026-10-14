@@ -1,4 +1,4 @@
-package lesson1;
+package obstacles;
 
 public interface Skills {   // Интерфейс человека роботка и кота
 
