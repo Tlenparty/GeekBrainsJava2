@@ -3,7 +3,6 @@ package chat;
 import chat.auth.AuthService;
 import chat.auth.BaseAuthService;
 import chat.handler.ClientHandler;
-import clientserver.Command;
 
 import java.io.IOException;
 import java.net.ServerSocket;

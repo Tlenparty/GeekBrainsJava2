@@ -5,8 +5,6 @@ import client.controllers.ChatController;
 import javafx.application.Platform;
 import client.NetworkClient;
 import client.controllers.ChatController;
-import clientserver.Command;
-import clientserver.commands.*;
 import javafx.application.Platform;
 
 import java.io.IOException;
